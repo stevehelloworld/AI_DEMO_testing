@@ -87,6 +87,22 @@
             border-radius: 4px;
             border: 1px solid #4a4a4a;
         }
+        
+        /* 添加结果显示样式 */
+        .result-symbol {
+            font-size: 120px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+        
+        .result-o {
+            color: #00ff00;
+        }
+        
+        .result-x {
+            color: #ff0000;
+        }
     </style>
     <!-- 引入 Teachable Machine 模型库 -->
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
@@ -126,7 +142,7 @@
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            // ���消所有标签按钮的激活状态
+            // 消所有标签按钮的激活状态
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('active');
             });
@@ -228,13 +244,35 @@
             window.requestAnimationFrame(loop);
         }
 
-        // 添加预测函数
+        // 修改预测函数
         async function predict() {
             const prediction = await model.predict(webcam.canvas);
+            
+            // 清空标签容器
+            labelContainer.innerHTML = '';
+            
+            // 添加符号显示
+            const resultDiv = document.createElement('div');
+            resultDiv.className = 'result-symbol';
+            
+            // 如果第一个类别的概率更大，显示 O，否则显示 X
+            if (prediction[0].probability > prediction[1].probability) {
+                resultDiv.textContent = 'O';
+                resultDiv.classList.add('result-o');
+            } else {
+                resultDiv.textContent = 'X';
+                resultDiv.classList.add('result-x');
+            }
+            
+            labelContainer.appendChild(resultDiv);
+            
+            // 可选：显示具体概率
             for (let i = 0; i < maxPredictions; i++) {
                 const classPrediction =
                     prediction[i].className + ": " + prediction[i].probability.toFixed(2);
-                labelContainer.childNodes[i].innerHTML = classPrediction;
+                const div = document.createElement('div');
+                div.innerHTML = classPrediction;
+                labelContainer.appendChild(div);
             }
         }
 
