@@ -203,6 +203,15 @@
 
         // 添加初始化函数
         async function init() {
+            // 如果已经存在摄像头实例，先停止并清理
+            if (webcam) {
+                webcam.stop();
+                const webcamContainer = document.getElementById("webcam-container");
+                webcamContainer.innerHTML = '';
+                const labelContainer = document.getElementById("label-container");
+                labelContainer.innerHTML = '';
+            }
+
             const modelURL = URL + "model.json";
             const metadataURL = URL + "metadata.json";
 
@@ -211,22 +220,19 @@
             maxPredictions = model.getTotalClasses();
 
             // 设置网络摄像头参数
-            const flip = true; // 是否水平翻转摄像头
+            const flip = true;
             const width = 200;
             const height = 200;
 
             // 初始化网络摄像头
             webcam = new tmImage.Webcam(width, height, flip);
             try {
-                // 请求摄像头权限并启动
                 await webcam.setup();
                 await webcam.play();
                 window.requestAnimationFrame(loop);
 
-                // 将摄像头元素添加到网页中
                 document.getElementById("webcam-container").appendChild(webcam.canvas);
 
-                // 创建预测标签容器
                 labelContainer = document.getElementById("label-container");
                 for (let i = 0; i < maxPredictions; i++) {
                     labelContainer.appendChild(document.createElement("div"));
