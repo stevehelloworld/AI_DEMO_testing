@@ -126,7 +126,7 @@
             document.querySelectorAll('.tab-content').forEach(tab => {
                 tab.classList.remove('active');
             });
-            // 取消所有标签按钮的激活状态
+            // ���消所有标签按钮的激活状态
             document.querySelectorAll('.tab-button').forEach(button => {
                 button.classList.remove('active');
             });
@@ -183,6 +183,59 @@
                 }
             };
             reader.readAsDataURL(file);
+        }
+
+        // 添加初始化函数
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // 加载模型
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // 设置网络摄像头参数
+            const flip = true; // 是否水平翻转摄像头
+            const width = 200;
+            const height = 200;
+
+            // 初始化网络摄像头
+            webcam = new tmImage.Webcam(width, height, flip);
+            try {
+                // 请求摄像头权限并启动
+                await webcam.setup();
+                await webcam.play();
+                window.requestAnimationFrame(loop);
+
+                // 将摄像头元素添加到网页中
+                document.getElementById("webcam-container").appendChild(webcam.canvas);
+
+                // 创建预测标签容器
+                labelContainer = document.getElementById("label-container");
+                for (let i = 0; i < maxPredictions; i++) {
+                    labelContainer.appendChild(document.createElement("div"));
+                }
+            } catch (error) {
+                console.error('摄像头访问出错:', error);
+                alert('无法访问摄像头，请确保已授予摄像头访问权限。');
+            }
+        }
+
+        // 添加预测循环函数
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        // 添加预测函数
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+            }
         }
 
     </script>
