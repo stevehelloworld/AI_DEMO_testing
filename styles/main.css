@@ -39,4 +39,42 @@ body {
 
 @media print {
     /* ... 打印样式 ... */
+}
+
+/* 添加摄像头容器样式 */
+#webcam-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 20px auto;
+}
+
+#webcam-container canvas {
+    width: 90% !important;
+    height: auto !important;
+    max-width: 800px; /* 防止在大屏幕上过大 */
+    border-radius: 12px; /* 添加圆角 */
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.3); /* 添加霓虹光效果 */
+}
+
+/* 调整标签容器位置 */
+#label-container {
+    text-align: center;
+    margin-top: 20px;
+}
+
+/* 响应式调整 */
+@media screen and (max-width: 768px) {
+    #webcam-container canvas {
+        width: 90% !important;
+        border-radius: 8px;
+    }
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    #webcam-container canvas {
+        width: 90% !important;
+        max-width: 600px;
+    }
 } 
