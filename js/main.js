@@ -34,7 +34,7 @@ function switchTab(tabName) {
     // 显示选中的标签页
     document.getElementById(tabName + '-tab').classList.add('active');
     
-    // 激活对应的标签按钮
+    // 激活对应的标签��钮
     event.target.classList.add('active');
 
     // 如果切换到上传标签页，停止摄像头
@@ -155,7 +155,20 @@ async function handleImageUpload(event) {
         }
 
         const imageElement = document.createElement('img');
-        imageElement.src = URL.createObjectURL(file);
+        const reader = new FileReader();
+
+        // 使用 Promise 包装 FileReader
+        const imageLoadPromise = new Promise((resolve, reject) => {
+            reader.onload = function(e) {
+                imageElement.src = e.target.result;
+                imageElement.onload = resolve;
+                imageElement.onerror = () => reject(new Error('图片加载失败'));
+            };
+            reader.onerror = () => reject(new Error('文件读取失败'));
+        });
+
+        // 开始读取文件
+        reader.readAsDataURL(file);
         
         // 设置预览容器和图片的样式
         const previewContainer = document.getElementById('preview-container');
@@ -175,11 +188,8 @@ async function handleImageUpload(event) {
         previewContainer.innerHTML = '';
         previewContainer.appendChild(imageElement);
         
-        // 等待图片加载
-        await new Promise((resolve, reject) => {
-            imageElement.onload = resolve;
-            imageElement.onerror = () => reject(new Error('图片加载失败'));
-        });
+        // 等待图片加载完成
+        await imageLoadPromise;
         
         // 进行预测
         const predictions = await model.predict(imageElement);
