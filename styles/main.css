@@ -192,4 +192,20 @@ input[type="file"] {
     .result-symbol {
         font-size: 110px;
     }
-} 
+}
+
+/* 标签页内容样式 */
+.tab-content {
+    display: none;  /* 默认隐藏所有标签页 */
+    padding: 25px;
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    background: rgba(45, 45, 45, 0.3);
+    border-radius: 8px;
+    box-shadow: 0 0 30px rgba(0, 123, 255, 0.2);
+    backdrop-filter: blur(5px);
+}
+
+.tab-content.active {
+    display: block;  /* 只显示激活的标签页 */
+}
+  

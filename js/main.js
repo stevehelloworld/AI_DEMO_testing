@@ -10,6 +10,7 @@ function switchTab(tabName) {
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
+    
     // 移除所有标签按钮的激活状态
     document.querySelectorAll('.tab-button').forEach(button => {
         button.classList.remove('active');
@@ -17,6 +18,7 @@ function switchTab(tabName) {
     
     // 显示选中的标签页
     document.getElementById(tabName + '-tab').classList.add('active');
+    
     // 激活对应的标签按钮
     event.target.classList.add('active');
 
