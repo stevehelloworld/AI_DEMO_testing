@@ -53,9 +53,9 @@ body {
 #webcam-container canvas {
     width: 90% !important;
     height: auto !important;
-    max-width: 800px; /* 防止在大屏幕上过大 */
-    border-radius: 12px; /* 添加圆角 */
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.3); /* 添加霓虹光效果 */
+    max-width: 800px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
 }
 
 /* 调整标签容器位置 */
@@ -73,6 +73,39 @@ body {
 }
 
 @media screen and (min-width: 769px) and (max-width: 1024px) {
+    #webcam-container canvas {
+        width: 90% !important;
+        max-width: 600px;
+    }
+}
+
+/* 保持 LOGO 原有尺寸 */
+.logo {
+    width: 150px;
+    height: auto;
+    margin-right: 20px;
+}
+
+/* 移动设备适配 */
+@media screen and (max-width: 768px) {
+    .logo {
+        width: 100px;
+        margin-right: 0;
+        margin-bottom: 10px;
+    }
+
+    #webcam-container canvas {
+        width: 90% !important;
+        border-radius: 8px;
+    }
+}
+
+/* 平板设备适配 */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .logo {
+        width: 120px;
+    }
+
     #webcam-container canvas {
         width: 90% !important;
         max-width: 600px;
