@@ -13,7 +13,84 @@ body {
     text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #00f;
 }
 
-/* ... 其余所有CSS样式 ... */
+/* 调整 LOGO 尺寸 */
+.logo {
+    width: 80px;  /* 减小 LOGO 尺寸 */
+    height: auto;
+    margin-right: 15px;
+}
+
+/* 调整标题大小 */
+.header h1 {
+    font-size: 24px;  /* 减小标题字体 */
+    margin: 0;
+}
+
+.tab-container {
+    margin: 15px 0;  /* 减小边距 */
+    background: rgba(45, 45, 45, 0.3);
+    padding: 8px;  /* 减小内边距 */
+    border-radius: 8px;
+    border: 1px solid rgba(0, 123, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.2);
+}
+
+.tab-button {
+    padding: 8px 16px;  /* 调整按钮大小 */
+    margin-right: 8px;
+    font-size: 14px;  /* 调整按钮字体大小 */
+}
+
+#webcam-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin: 15px auto;  /* 调整边距 */
+}
+
+#webcam-container canvas {
+    width: 90% !important;
+    height: auto !important;
+    max-width: 800px;
+    border-radius: 12px;
+    box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
+}
+
+/* 移动设备适配 */
+@media screen and (max-width: 768px) {
+    .logo {
+        width: 60px;  /* 移动端更小的 LOGO */
+        margin-right: 10px;
+    }
+
+    .header h1 {
+        font-size: 20px;  /* 移动端更小的标题 */
+    }
+
+    #webcam-container canvas {
+        width: 90% !important;
+        border-radius: 8px;
+    }
+}
+
+/* 平板设备适配 */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .logo {
+        width: 70px;  /* 平板端适中的 LOGO */
+    }
+
+    .header h1 {
+        font-size: 22px;  /* 平板端适中的标题 */
+    }
+
+    #webcam-container canvas {
+        width: 90% !important;
+        max-width: 600px;
+    }
+}
+
+/* 其他样式保持不变 */
 
 /* 媒体查询和响应式设计部分 */
 @media screen and (max-width: 768px) {
@@ -39,23 +116,6 @@ body {
 
 @media print {
     /* ... 打印样式 ... */
-}
-
-/* 添加摄像头容器样式 */
-#webcam-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    margin: 20px auto;
-}
-
-#webcam-container canvas {
-    width: 90% !important;
-    height: auto !important;
-    max-width: 800px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(0, 123, 255, 0.3);
 }
 
 /* 调整标签容器位置 */
