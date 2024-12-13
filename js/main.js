@@ -29,7 +29,45 @@ function switchTab(tabName) {
 // 初始化函数
 async function init() {
     try {
-        // ... init函数的完整代码 ...
+        // 如果已经存在摄像头实例，先停止并清理
+        if (webcam) {
+            webcam.stop();
+            const stream = webcam.webcam.srcObject;
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+        }
+
+        // 清空容器
+        const webcamContainer = document.getElementById("webcam-container");
+        labelContainer = document.getElementById("label-container");
+        webcamContainer.innerHTML = '';
+        labelContainer.innerHTML = '';
+
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+
+        // 加载模型
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+
+        // 设置网络摄像头参数
+        const flip = true;
+        const width = 400;  // 增加默认宽度
+        const height = 400; // 增加默认高度
+
+        // 初始化新的网络摄像头
+        webcam = new tmImage.Webcam(width, height, flip);
+        await webcam.setup();
+        await webcam.play();
+
+        // 确保容器是空的，然后添加新的摄像头画布
+        webcamContainer.innerHTML = '';
+        webcamContainer.appendChild(webcam.canvas);
+
+        // 开始预测循环
+        window.requestAnimationFrame(loop);
+
     } catch (error) {
         console.error('摄像头访问出错:', error);
         alert('无法访问摄像头，请确保已授予摄像头访问权限。');
@@ -45,10 +83,78 @@ async function loop() {
 
 // 预测函数
 async function predict() {
-    // ... predict函数的完整代码 ...
+    const prediction = await model.predict(webcam.canvas);
+    
+    // 确保 labelContainer 存在
+    if (!labelContainer) {
+        labelContainer = document.getElementById("label-container");
+    }
+    
+    // 清空标签容器
+    labelContainer.innerHTML = '';
+    
+    // 添加符号显示
+    const resultDiv = document.createElement('div');
+    resultDiv.className = 'result-symbol';
+    
+    // 如果第一个类别的概率更大，显示 O，否则显示 X
+    if (prediction[0].probability > prediction[1].probability) {
+        resultDiv.textContent = 'O';
+        resultDiv.classList.add('result-o');
+    } else {
+        resultDiv.textContent = 'X';
+        resultDiv.classList.add('result-x');
+    }
+    
+    labelContainer.appendChild(resultDiv);
+    
+    // 显示具体概率
+    for (let i = 0; i < maxPredictions; i++) {
+        const classPrediction =
+            prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+        const div = document.createElement('div');
+        div.innerHTML = classPrediction;
+        labelContainer.appendChild(div);
+    }
 }
 
 // 图片上传处理函数
 async function handleImageUpload(event) {
-    // ... handleImageUpload函数的完整代码 ...
+    const file = event.target.files[0];
+    const imageElement = document.createElement('img');
+    imageElement.src = URL.createObjectURL(file);
+    
+    const previewContainer = document.getElementById('preview-container');
+    previewContainer.innerHTML = '';
+    previewContainer.appendChild(imageElement);
+    
+    // 等待图片加载
+    await new Promise(resolve => imageElement.onload = resolve);
+    
+    // 进行预测
+    const predictions = await model.predict(imageElement);
+    
+    const uploadLabelContainer = document.getElementById('upload-label-container');
+    uploadLabelContainer.innerHTML = '';
+    
+    // 显示预测结果
+    const resultDiv = document.createElement('div');
+    resultDiv.className = 'result-symbol';
+    
+    if (predictions[0].probability > predictions[1].probability) {
+        resultDiv.textContent = 'O';
+        resultDiv.classList.add('result-o');
+    } else {
+        resultDiv.textContent = 'X';
+        resultDiv.classList.add('result-x');
+    }
+    
+    uploadLabelContainer.appendChild(resultDiv);
+    
+    // 显示具体概率
+    predictions.forEach(prediction => {
+        const div = document.createElement('div');
+        div.innerHTML = `${prediction.className}: ${prediction.probability.toFixed(2)}`;
+        uploadLabelContainer.appendChild(div);
+    });
 } 
