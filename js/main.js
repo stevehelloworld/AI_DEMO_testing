@@ -34,7 +34,7 @@ function switchTab(tabName) {
     // 显示选中的标签页
     document.getElementById(tabName + '-tab').classList.add('active');
     
-    // 激活对应的标签��钮
+    // 激活对应的标签按钮
     event.target.classList.add('active');
 
     // 如果切换到上传标签页，停止摄像头
@@ -136,12 +136,24 @@ async function predict() {
 // 图片上传处理函数
 async function handleImageUpload(event) {
     try {
-        // 如果模型未加载，先加载模型
+        // 显示加载提示
+        const uploadLabelContainer = document.getElementById('upload-label-container');
+        uploadLabelContainer.innerHTML = '模型加载中，请稍候...';
+        
+        // 确保模型加载
         if (!modelLoaded) {
             await loadModel();
         }
+        
+        if (!model) {
+            throw new Error('模型加载失败');
+        }
 
         const file = event.target.files[0];
+        if (!file) {
+            throw new Error('未选择文件');
+        }
+
         const imageElement = document.createElement('img');
         imageElement.src = URL.createObjectURL(file);
         
@@ -164,12 +176,14 @@ async function handleImageUpload(event) {
         previewContainer.appendChild(imageElement);
         
         // 等待图片加载
-        await new Promise(resolve => imageElement.onload = resolve);
+        await new Promise((resolve, reject) => {
+            imageElement.onload = resolve;
+            imageElement.onerror = () => reject(new Error('图片加载失败'));
+        });
         
         // 进行预测
         const predictions = await model.predict(imageElement);
         
-        const uploadLabelContainer = document.getElementById('upload-label-container');
         uploadLabelContainer.innerHTML = '';
         uploadLabelContainer.style.textAlign = 'center';
         
@@ -196,6 +210,7 @@ async function handleImageUpload(event) {
         });
     } catch (error) {
         console.error('预测出错:', error);
-        alert('预测失败，请重试。');
+        const uploadLabelContainer = document.getElementById('upload-label-container');
+        uploadLabelContainer.innerHTML = `预测失败: ${error.message}`;
     }
 } 
