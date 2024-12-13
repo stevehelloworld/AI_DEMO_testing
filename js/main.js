@@ -34,7 +34,7 @@ function switchTab(tabName) {
     // 显示选中的标签页
     document.getElementById(tabName + '-tab').classList.add('active');
     
-    // 激活对应的标签按钮
+    // 激活对应的标签��钮
     event.target.classList.add('active');
 
     // 如果切换到上传标签页，停止摄像头
@@ -135,34 +135,43 @@ async function predict() {
 
 // 图片上传处理函数
 async function handleImageUpload(event) {
-    // 如果模型未加载，先加载模型
-    if (!modelLoaded) {
-        await loadModel();
-    }
-
-    const file = event.target.files[0];
-    const imageElement = document.createElement('img');
-    imageElement.src = URL.createObjectURL(file);
-    
-    // 设置预览图片的样式
-    imageElement.style.maxWidth = '90%';
-    imageElement.style.height = 'auto';
-    imageElement.style.borderRadius = '12px';
-    imageElement.style.boxShadow = '0 0 20px rgba(0, 123, 255, 0.3)';
-    
-    const previewContainer = document.getElementById('preview-container');
-    previewContainer.innerHTML = '';
-    previewContainer.appendChild(imageElement);
-    
-    // 等待图片加载
-    await new Promise(resolve => imageElement.onload = resolve);
-    
     try {
+        // 如果模型未加载，先加载模型
+        if (!modelLoaded) {
+            await loadModel();
+        }
+
+        const file = event.target.files[0];
+        const imageElement = document.createElement('img');
+        imageElement.src = URL.createObjectURL(file);
+        
+        // 设置预览容器和图片的样式
+        const previewContainer = document.getElementById('preview-container');
+        previewContainer.style.display = 'flex';
+        previewContainer.style.justifyContent = 'center';
+        previewContainer.style.alignItems = 'center';
+        previewContainer.style.margin = '15px auto';
+        previewContainer.style.width = '100%';
+        
+        // 设置图片样式
+        imageElement.style.width = '90%';
+        imageElement.style.maxWidth = '800px';
+        imageElement.style.height = 'auto';
+        imageElement.style.borderRadius = '12px';
+        imageElement.style.boxShadow = '0 0 20px rgba(0, 123, 255, 0.3)';
+        
+        previewContainer.innerHTML = '';
+        previewContainer.appendChild(imageElement);
+        
+        // 等待图片加载
+        await new Promise(resolve => imageElement.onload = resolve);
+        
         // 进行预测
         const predictions = await model.predict(imageElement);
         
         const uploadLabelContainer = document.getElementById('upload-label-container');
         uploadLabelContainer.innerHTML = '';
+        uploadLabelContainer.style.textAlign = 'center';
         
         // 显示预测结果
         const resultDiv = document.createElement('div');
