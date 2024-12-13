@@ -3,6 +3,21 @@ const URL = "https://teachablemachine.withgoogle.com/models/_bTggKS0d/";
 
 // 全局变量
 let model, webcam, labelContainer, maxPredictions;
+let modelLoaded = false;
+
+// 加载模型函数
+async function loadModel() {
+    try {
+        const modelURL = URL + "model.json";
+        const metadataURL = URL + "metadata.json";
+        model = await tmImage.load(modelURL, metadataURL);
+        maxPredictions = model.getTotalClasses();
+        modelLoaded = true;
+    } catch (error) {
+        console.error('模型加载出错:', error);
+        alert('模型加载失败，请刷新页面重试。');
+    }
+}
 
 // 标签页切换功能
 function switchTab(tabName) {
@@ -31,6 +46,11 @@ function switchTab(tabName) {
 // 初始化函数
 async function init() {
     try {
+        // 如果模型未加载，先加载模型
+        if (!modelLoaded) {
+            await loadModel();
+        }
+        
         // 如果已经存在摄像头实例，先停止并清理
         if (webcam) {
             webcam.stop();
@@ -45,13 +65,6 @@ async function init() {
         labelContainer = document.getElementById("label-container");
         webcamContainer.innerHTML = '';
         labelContainer.innerHTML = '';
-
-        const modelURL = URL + "model.json";
-        const metadataURL = URL + "metadata.json";
-
-        // 加载模型
-        model = await tmImage.load(modelURL, metadataURL);
-        maxPredictions = model.getTotalClasses();
 
         // 设置网络摄像头参数
         const flip = true;
@@ -122,9 +135,20 @@ async function predict() {
 
 // 图片上传处理函数
 async function handleImageUpload(event) {
+    // 如果模型未加载，先加载模型
+    if (!modelLoaded) {
+        await loadModel();
+    }
+
     const file = event.target.files[0];
     const imageElement = document.createElement('img');
     imageElement.src = URL.createObjectURL(file);
+    
+    // 设置预览图片的样式
+    imageElement.style.maxWidth = '90%';
+    imageElement.style.height = 'auto';
+    imageElement.style.borderRadius = '12px';
+    imageElement.style.boxShadow = '0 0 20px rgba(0, 123, 255, 0.3)';
     
     const previewContainer = document.getElementById('preview-container');
     previewContainer.innerHTML = '';
@@ -133,30 +157,36 @@ async function handleImageUpload(event) {
     // 等待图片加载
     await new Promise(resolve => imageElement.onload = resolve);
     
-    // 进行预测
-    const predictions = await model.predict(imageElement);
-    
-    const uploadLabelContainer = document.getElementById('upload-label-container');
-    uploadLabelContainer.innerHTML = '';
-    
-    // 显示预测结果
-    const resultDiv = document.createElement('div');
-    resultDiv.className = 'result-symbol';
-    
-    if (predictions[0].probability > predictions[1].probability) {
-        resultDiv.textContent = 'O';
-        resultDiv.classList.add('result-o');
-    } else {
-        resultDiv.textContent = 'X';
-        resultDiv.classList.add('result-x');
+    try {
+        // 进行预测
+        const predictions = await model.predict(imageElement);
+        
+        const uploadLabelContainer = document.getElementById('upload-label-container');
+        uploadLabelContainer.innerHTML = '';
+        
+        // 显示预测结果
+        const resultDiv = document.createElement('div');
+        resultDiv.className = 'result-symbol';
+        
+        if (predictions[0].probability > predictions[1].probability) {
+            resultDiv.textContent = 'O';
+            resultDiv.classList.add('result-o');
+        } else {
+            resultDiv.textContent = 'X';
+            resultDiv.classList.add('result-x');
+        }
+        
+        uploadLabelContainer.appendChild(resultDiv);
+        
+        // 显示具体概率
+        predictions.forEach(prediction => {
+            const div = document.createElement('div');
+            div.innerHTML = `${prediction.className}: ${prediction.probability.toFixed(2)}`;
+            div.style.textAlign = 'center';
+            uploadLabelContainer.appendChild(div);
+        });
+    } catch (error) {
+        console.error('预测出错:', error);
+        alert('预测失败，请重试。');
     }
-    
-    uploadLabelContainer.appendChild(resultDiv);
-    
-    // 显示具体概率
-    predictions.forEach(prediction => {
-        const div = document.createElement('div');
-        div.innerHTML = `${prediction.className}: ${prediction.probability.toFixed(2)}`;
-        uploadLabelContainer.appendChild(div);
-    });
 } 
