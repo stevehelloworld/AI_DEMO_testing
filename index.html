@@ -223,34 +223,52 @@
 
         // 添加初始化函数
         async function init() {
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
-
-            // 加载模型
-            model = await tmImage.load(modelURL, metadataURL);
-            maxPredictions = model.getTotalClasses();
-
-            // 设置网络摄像头参数
-            const flip = true; // 是否水平翻转摄像头
-            const width = 200;
-            const height = 200;
-
-            // 初始化网络摄像头
-            webcam = new tmImage.Webcam(width, height, flip);
             try {
-                // 请求摄像头权限并启动
+                // 如果已经存在摄像头实例，先停止并清理
+                if (webcam) {
+                    webcam.stop();
+                    // 确保完全停止摄像头流
+                    const stream = webcam.webcam.srcObject;
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                }
+
+                // 清空容器
+                const webcamContainer = document.getElementById("webcam-container");
+                const labelContainer = document.getElementById("label-container");
+                webcamContainer.innerHTML = '';
+                labelContainer.innerHTML = '';
+
+                const modelURL = URL + "model.json";
+                const metadataURL = URL + "metadata.json";
+
+                // 加载模型
+                model = await tmImage.load(modelURL, metadataURL);
+                maxPredictions = model.getTotalClasses();
+
+                // 设置网络摄像头参数
+                const flip = true;
+                const width = 200;
+                const height = 200;
+
+                // 初始化新的网络摄像头
+                webcam = new tmImage.Webcam(width, height, flip);
                 await webcam.setup();
                 await webcam.play();
-                window.requestAnimationFrame(loop);
 
-                // 将摄像头元素添加到网页中
-                document.getElementById("webcam-container").appendChild(webcam.canvas);
+                // 确保容器是空的，然后添加新的摄像头画布
+                webcamContainer.innerHTML = '';
+                webcamContainer.appendChild(webcam.canvas);
 
-                // 创建预测标签容器
-                labelContainer = document.getElementById("label-container");
+                // 创建新的标签容器
                 for (let i = 0; i < maxPredictions; i++) {
                     labelContainer.appendChild(document.createElement("div"));
                 }
+
+                // 开始预测循环
+                window.requestAnimationFrame(loop);
+
             } catch (error) {
                 console.error('摄像头访问出错:', error);
                 alert('无法访问摄像头，请确保已授予摄像头访问权限。');
