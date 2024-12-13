@@ -237,7 +237,7 @@
 
                 // 清空容器
                 const webcamContainer = document.getElementById("webcam-container");
-                const labelContainer = document.getElementById("label-container");
+                labelContainer = document.getElementById("label-container");
                 webcamContainer.innerHTML = '';
                 labelContainer.innerHTML = '';
 
@@ -262,11 +262,6 @@
                 webcamContainer.innerHTML = '';
                 webcamContainer.appendChild(webcam.canvas);
 
-                // 创建新的标签容器
-                for (let i = 0; i < maxPredictions; i++) {
-                    labelContainer.appendChild(document.createElement("div"));
-                }
-
                 // 开始预测循环
                 window.requestAnimationFrame(loop);
 
@@ -286,6 +281,11 @@
         // 修改预测函数
         async function predict() {
             const prediction = await model.predict(webcam.canvas);
+            
+            // 确保 labelContainer 存在
+            if (!labelContainer) {
+                labelContainer = document.getElementById("label-container");
+            }
             
             // 清空标签容器
             labelContainer.innerHTML = '';
