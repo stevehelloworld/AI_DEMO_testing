@@ -1,0 +1,42 @@
+body {
+    background-color: #0a0a0a;
+    color: #fff;
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 30px;
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #00f;
+}
+
+/* ... 其余所有CSS样式 ... */
+
+/* 媒体查询和响应式设计部分 */
+@media screen and (max-width: 768px) {
+    /* ... 移动设备样式 ... */
+}
+
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    /* ... 平板设备样式 ... */
+}
+
+@media screen and (min-width: 1025px) {
+    /* ... 桌面设备样式 ... */
+}
+
+/* 其他媒体查询 */
+@media (prefers-color-scheme: dark) {
+    /* ... 暗色模式样式 ... */
+}
+
+@media (hover: none) {
+    /* ... 触摸设备样式 ... */
+}
+
+@media print {
+    /* ... 打印样式 ... */
+} 
