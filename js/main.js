@@ -1,11 +1,11 @@
 // 模型URL
 const URL = "https://teachablemachine.withgoogle.com/models/_bTggKS0d/";
 
-// 全局变量
+// 全局變量
 let model, webcam, labelContainer, maxPredictions;
 let modelLoaded = false;
 
-// 加载模型函数
+// 載入模型函數
 async function loadModel() {
     try {
         const modelURL = URL + "model.json";
@@ -14,44 +14,44 @@ async function loadModel() {
         maxPredictions = model.getTotalClasses();
         modelLoaded = true;
     } catch (error) {
-        console.error('模型加载出错:', error);
-        alert('模型加载失败，请刷新页面重试。');
+        console.error('模型載入出錯:', error);
+        alert('模型載入失敗，請重新整理頁面重試。');
     }
 }
 
-// 标签页切换功能
+// 標籤頁切換功能
 function switchTab(tabName) {
-    // 隐藏所有标签页内容
+    // 隱藏所有標籤頁內容
     document.querySelectorAll('.tab-content').forEach(tab => {
         tab.classList.remove('active');
     });
     
-    // 移除所有标签按钮的激活状态
+    // 移除所有標籤按鈕的啟用狀態
     document.querySelectorAll('.tab-button').forEach(button => {
         button.classList.remove('active');
     });
     
-    // 显示选中的标签页
+    // 顯示選中的標籤頁
     document.getElementById(tabName + '-tab').classList.add('active');
     
-    // 激活对应的标签��钮
+    // 啟用對應的標籤按鈕
     event.target.classList.add('active');
 
-    // 如果切换到上传标签页，停止摄像头
+    // 如果切換到上傳標籤頁，停止攝像頭
     if (tabName === 'upload' && webcam) {
         webcam.stop();
     }
 }
 
-// 初始化函数
+// 初始化函數
 async function init() {
     try {
-        // 如果模型未加载，先加载模型
+        // 如果模型未載入，先載入模型
         if (!modelLoaded) {
             await loadModel();
         }
         
-        // 如果已经存在摄像头实例，先停止并清理
+        // 如果已經存在攝像頭實例，先停止並清理
         if (webcam) {
             webcam.stop();
             const stream = webcam.webcam.srcObject;
@@ -66,53 +66,53 @@ async function init() {
         webcamContainer.innerHTML = '';
         labelContainer.innerHTML = '';
 
-        // 设置网络摄像头参数
+        // 設置網路攝像頭參數
         const flip = true;
-        const width = 400;  // 增加默认宽度
-        const height = 400; // 增加默认高度
+        const width = 400;  // 增加預設寬度
+        const height = 400; // 增加預設高度
 
-        // 初始化新的网络摄像头
+        // 初始化新的網路攝像頭
         webcam = new tmImage.Webcam(width, height, flip);
         await webcam.setup();
         await webcam.play();
 
-        // 确保容器是空的，然后添加新的摄像头画布
+        // 確保容器是空的，然後添加新的攝像頭畫布
         webcamContainer.innerHTML = '';
         webcamContainer.appendChild(webcam.canvas);
 
-        // 开始预测循环
+        // 開始預測循環
         window.requestAnimationFrame(loop);
 
     } catch (error) {
-        console.error('摄像头访问出错:', error);
-        alert('无法访问摄像头，请确保已授予摄像头访问权限。');
+        console.error('攝像頭訪問出錯:', error);
+        alert('無法訪問攝像頭，請確保已授予攝像頭訪問權限。');
     }
 }
 
-// 预测循环函数
+// 預測循環函數
 async function loop() {
     webcam.update();
     await predict();
     window.requestAnimationFrame(loop);
 }
 
-// 预测函数
+// 預測函數
 async function predict() {
     const prediction = await model.predict(webcam.canvas);
     
-    // 确保 labelContainer 存在
+    // 確保 labelContainer 存在
     if (!labelContainer) {
         labelContainer = document.getElementById("label-container");
     }
     
-    // 清空标签容器
+    // 清空標籤容器
     labelContainer.innerHTML = '';
     
-    // 添加符号显示
+    // 添加符號顯示
     const resultDiv = document.createElement('div');
     resultDiv.className = 'result-symbol';
     
-    // 如果第一个类别的概率更大，显示 O，否则显示 X
+    // 如果第一個類別的概率更大，顯示 O，否則顯示 X
     if (prediction[0].probability > prediction[1].probability) {
         resultDiv.textContent = 'O';
         resultDiv.classList.add('result-o');
@@ -123,7 +123,7 @@ async function predict() {
     
     labelContainer.appendChild(resultDiv);
     
-    // 显示具体概率
+    // 顯示具體概率
     for (let i = 0; i < maxPredictions; i++) {
         const classPrediction =
             prediction[i].className + ": " + prediction[i].probability.toFixed(2);
@@ -133,44 +133,44 @@ async function predict() {
     }
 }
 
-// 图片上传处理函数
+// 圖片上傳處理函數
 async function handleImageUpload(event) {
     try {
-        // 显示加载提示
+        // 顯示載入提示
         const uploadLabelContainer = document.getElementById('upload-label-container');
-        uploadLabelContainer.innerHTML = '模型加载中，请稍候...';
+        uploadLabelContainer.innerHTML = '模型載入中，請稍候...';
         
-        // 确保模型加载
+        // 確保模型載入
         if (!modelLoaded) {
             await loadModel();
         }
         
         if (!model) {
-            throw new Error('模型加载失败');
+            throw new Error('模型載入失敗');
         }
 
         const file = event.target.files[0];
         if (!file) {
-            throw new Error('未选择文件');
+            throw new Error('未選擇檔案');
         }
 
         const imageElement = document.createElement('img');
         const reader = new FileReader();
 
-        // 使用 Promise 包装 FileReader
+        // 使用 Promise 包裝 FileReader
         const imageLoadPromise = new Promise((resolve, reject) => {
             reader.onload = function(e) {
                 imageElement.src = e.target.result;
                 imageElement.onload = resolve;
-                imageElement.onerror = () => reject(new Error('图片加载失败'));
+                imageElement.onerror = () => reject(new Error('圖片載入失敗'));
             };
-            reader.onerror = () => reject(new Error('文件读取失败'));
+            reader.onerror = () => reject(new Error('檔案讀取失敗'));
         });
 
-        // 开始读取文件
+        // 開始讀取檔案
         reader.readAsDataURL(file);
         
-        // 设置预览容器和图片的样式
+        // 設置預覽容器和圖片的樣式
         const previewContainer = document.getElementById('preview-container');
         previewContainer.style.display = 'flex';
         previewContainer.style.justifyContent = 'center';
@@ -178,7 +178,7 @@ async function handleImageUpload(event) {
         previewContainer.style.margin = '15px auto';
         previewContainer.style.width = '100%';
         
-        // 设置图片样式
+        // 設置圖片樣式
         imageElement.style.width = '90%';
         imageElement.style.maxWidth = '800px';
         imageElement.style.height = 'auto';
@@ -188,16 +188,16 @@ async function handleImageUpload(event) {
         previewContainer.innerHTML = '';
         previewContainer.appendChild(imageElement);
         
-        // 等待图片加载完成
+        // 等待圖片載入完成
         await imageLoadPromise;
         
-        // 进行预测
+        // 進行預測
         const predictions = await model.predict(imageElement);
         
         uploadLabelContainer.innerHTML = '';
         uploadLabelContainer.style.textAlign = 'center';
         
-        // 显示预测结果
+        // 顯示預測結果
         const resultDiv = document.createElement('div');
         resultDiv.className = 'result-symbol';
         
@@ -211,7 +211,7 @@ async function handleImageUpload(event) {
         
         uploadLabelContainer.appendChild(resultDiv);
         
-        // 显示具体概率
+        // 顯示具體概率
         predictions.forEach(prediction => {
             const div = document.createElement('div');
             div.innerHTML = `${prediction.className}: ${prediction.probability.toFixed(2)}`;
@@ -219,8 +219,8 @@ async function handleImageUpload(event) {
             uploadLabelContainer.appendChild(div);
         });
     } catch (error) {
-        console.error('预测出错:', error);
+        console.error('預測出錯:', error);
         const uploadLabelContainer = document.getElementById('upload-label-container');
-        uploadLabelContainer.innerHTML = `预测失败: ${error.message}`;
+        uploadLabelContainer.innerHTML = `預測失敗: ${error.message}`;
     }
 } 

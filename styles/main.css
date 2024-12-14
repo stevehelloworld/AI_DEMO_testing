@@ -208,4 +208,8 @@ input[type="file"] {
 .tab-content.active {
     display: block;  /* 只显示激活的标签页 */
 }
+
+#webcam-tab {
+    text-align: center;
+}
   
