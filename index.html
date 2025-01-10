@@ -14,29 +14,12 @@
         <h1>TM DEMO</h1>
     </div>
     
-    <div class="tab-container">
-        <button class="tab-button active" onclick="switchTab('webcam')">Webcam</button>
-        <button class="tab-button" onclick="switchTab('upload')">Upload Files</button>
-    </div>
-
     <div id="webcam-tab" class="tab-content active">
         <button type="button" onclick="init()">Start</button>
         <div id="webcam-container"></div>
         <div id="label-container"></div>
     </div>
 
-    <div id="upload-tab" class="tab-content">
-        <input type="file" id="imageUpload" accept="image/*" onchange="handleImageUpload(event)">
-        <div id="preview-container"></div>
-        <div id="upload-label-container"></div>
-    </div>
-
     <script src="./js/main.js"></script>
 </body>
-
-
-
-
-
-
 </html> 
