@@ -1,7 +1,7 @@
-// 模型URL
+// 模型 URL
 const URL = "https://teachablemachine.withgoogle.com/models/_bTggKS0d/";
 
-// 全局變量
+// 全域變數
 let model, webcam, labelContainer, maxPredictions;
 let modelLoaded = false;
 
@@ -84,8 +84,8 @@ async function init() {
         window.requestAnimationFrame(loop);
 
     } catch (error) {
-        console.error('攝像頭訪問出錯:', error);
-        alert('無法訪問攝像頭，請確保已授予攝像頭訪問權限。');
+        console.error('攝影機存取出錯:', error);
+        alert('無法存取攝影機，請確保已授予攝影機存取權限。');
     }
 }
 
